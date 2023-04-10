@@ -5,10 +5,12 @@ from datetime import timedelta, datetime
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app import schemas, database, config
+from app import schemas, db, config
 from app.crud import get_user_by_email, create_user
 from app.models import User
-from app.utils import get_password_hash
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 

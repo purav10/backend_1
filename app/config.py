@@ -1,22 +1,17 @@
 import os
+from dotenv import load_dotenv
+from pydantic import BaseSettings, PostgresDsn
 
-from pydantic import BaseSettings, validator
-from databases import DatabaseURL
+load_dotenv()
 
 class Settings(BaseSettings):
-    app_name: str = "My App"
-    jwt_secret: str
-    jwt_algorithm: str = "HS256"
+    database_url: str = "sqlite:///./test.db"
+    jwt_secret: str = os.getenv("JWT_SECRET")
     access_token_expire_minutes: int = 1440
-    database_url: str
-
-    @validator("database_url", pre=True)
-    def set_database_url(cls, value):
-        if isinstance(value, str):
-            return value
-        return str(value)
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
-settings = Settings()
+def get_settings():
+    return Settings()
