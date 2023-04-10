@@ -1,14 +1,22 @@
 import os
 
-class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'mysecretkey')
+from pydantic import BaseSettings, validator
+from databases import DatabaseURL
 
-    ALGORITHM = os.environ.get('ALGORITHM', 'HS256')
+class Settings(BaseSettings):
+    app_name: str = "My App"
+    jwt_secret: str
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 1440
+    database_url: str
 
-    ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', 1440)
+    @validator("database_url", pre=True)
+    def set_database_url(cls, value):
+        if isinstance(value, str):
+            return value
+        return str(value)
 
-    MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
+    class Config:
+        env_file = ".env"
 
-    MONGO_DATABASE_NAME = os.environ.get('MONGO_DATABASE_NAME', 'mydatabase')
-
-    MONGO_USERS_COLLECTION_NAME = os.environ.get('MONGO_USERS_COLLECTION_NAME', 'users')
+settings = Settings()
